@@ -33,7 +33,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith("Bearer ")) {
-                // No JWT token found in the request, continue processing
                 filterChain.doFilter(request, response);
                 return;
             }

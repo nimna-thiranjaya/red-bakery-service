@@ -22,34 +22,34 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long UserId;
 
-    private String FirstName;
+    private String firstName;
 
-    private String LastName;
+    private String lastName;
 
-    private String Email;
+    private String email;
 
-    private String Password;
+    private String password;
 
-    private Integer Status;
+    private Integer status;
 
-    private Boolean IsVerified;
+    private Boolean isVerified;
 
-    private Role Role;
+    private Role role;
 
     @CreationTimestamp
-    private Date CreatedAt;
+    private Date createdAt;
 
     @UpdateTimestamp
-    private Date UpdatedAt;
+    private Date updatedAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(Role.name()));
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
     public String getUsername() {
-        return Email;
+        return email;
     }
 
     @Override
@@ -69,6 +69,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return Status == WellKnownStatus.ACTIVE.getValue();
+        return status == WellKnownStatus.ACTIVE.getValue();
     }
 }

@@ -9,6 +9,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -17,8 +18,8 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.function.Function;
-
 @Service
+@RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
     @Value("${jwt.secret}")
     private String SECRET_KEY;
@@ -30,9 +31,6 @@ public class JwtServiceImpl implements JwtService {
     private long REFRESH_TOKEN_VALIDITY;
 
     private final UserRepository userRepository;
-    public JwtServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public String generateToken(UserDetails userDetails){
         return Jwts

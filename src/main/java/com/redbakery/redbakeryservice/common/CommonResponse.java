@@ -16,4 +16,11 @@ public class CommonResponse {
     private String message;
     private Instant timestamp;
     private Object dataSet;
+
+    public CommonResponse(boolean isSuccess, String message, Object dataSet) {
+        this.isSuccess = isSuccess;
+        this.message = message;
+        this.timestamp = Instant.now();
+        this.dataSet = dataSet;
+    }
 }

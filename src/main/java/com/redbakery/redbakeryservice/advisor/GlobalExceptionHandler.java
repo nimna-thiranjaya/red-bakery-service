@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<CommonResponse> handleBadeRequestException(Exception e) {
         return new ResponseEntity<CommonResponse>(
-                new CommonResponse(false,e.getMessage(), Instant.now(), null),
+                new CommonResponse(false,e.getMessage(),null),
                 HttpStatus.BAD_REQUEST
         );
     }
@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<CommonResponse> handleNotFoundException(Exception e) {
         return new ResponseEntity<CommonResponse>(
-                new CommonResponse(false,e.getMessage(), Instant.now(), null),
+                new CommonResponse(false,e.getMessage(), null),
                 HttpStatus.NOT_FOUND
         );
     }
@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<CommonResponse> handleCConflictException(Exception e) {
         return new ResponseEntity<CommonResponse>(
-                new CommonResponse(false, e.getMessage(), Instant.now(), null),
+                new CommonResponse(false, e.getMessage(), null),
                 HttpStatus.CONFLICT
         );
     }
@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<CommonResponse> handleForbiddenException(Exception e) {
         return new ResponseEntity<CommonResponse>(
-                new CommonResponse(false, e.getMessage(), Instant.now(), null),
+                new CommonResponse(false, e.getMessage(), null),
                 HttpStatus.FORBIDDEN
         );
     }
@@ -46,15 +46,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InternalServerErrorException.class)
     public ResponseEntity<CommonResponse> handleInternalServerException(Exception e){
         return new ResponseEntity<CommonResponse>(
-                new CommonResponse(false, e.getMessage(), Instant.now(), null),
-                HttpStatus.INTERNAL_SERVER_ERROR
-        );
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<CommonResponse> handleException (Exception e) {
-        return new ResponseEntity<CommonResponse>(
-                new CommonResponse(false, e.getMessage(), Instant.now(), null),
+                new CommonResponse(false, e.getMessage(), null),
                 HttpStatus.INTERNAL_SERVER_ERROR
         );
     }

@@ -46,7 +46,7 @@ public class User implements UserDetails {
     @Column(name = "is_verified", nullable = false)
     private Boolean isVerified;
 
-    @Column(name = "is_deleted", nullable = false)
+    @Column(name = "role", nullable = false)
     private Role role;
 
     @CreationTimestamp

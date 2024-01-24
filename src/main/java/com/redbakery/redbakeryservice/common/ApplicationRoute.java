@@ -11,5 +11,6 @@ public class ApplicationRoute {
     public class Authentication {
         public static final  String Root = ApplicationRoute.Root + "/auth";
         public static final String Login = "/login";
+        public static final String RefreshToken = "/refresh-token";
     }
 }

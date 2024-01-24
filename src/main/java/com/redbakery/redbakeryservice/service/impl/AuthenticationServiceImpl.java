@@ -1,7 +1,9 @@
 package com.redbakery.redbakeryservice.service.impl;
 
+import com.redbakery.redbakeryservice.dto.request.RefreshTokenRequestDto;
 import com.redbakery.redbakeryservice.dto.request.UserLoginRequestDto;
 import com.redbakery.redbakeryservice.dto.request.UserSaveRequestDto;
+import com.redbakery.redbakeryservice.dto.response.RefreshTokenResponseDto;
 import com.redbakery.redbakeryservice.dto.response.UserLoginResponseDto;
 import com.redbakery.redbakeryservice.dto.response.UserResponseDto;
 import com.redbakery.redbakeryservice.exception.BadRequestException;
@@ -27,7 +29,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final ModelMapper modelMapper;
 
     @Override
-    public UserLoginResponseDto userLogin(UserLoginRequestDto request) {
+    public UserLoginResponseDto UserLogin(UserLoginRequestDto request) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
@@ -48,5 +50,34 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         );
 
         return response;
+    }
+
+    @Override
+    public UserLoginResponseDto GetRefreshToken(RefreshTokenRequestDto request) {
+        try{
+            String email = jwtService.extractUserName(request.getToken());
+
+            User user = userRepository.findByEmail(email).orElseThrow(
+                    () -> new BadRequestException("Invalid Token!")
+            );
+
+            if (jwtService.isTokenValid(request.getToken(), user)) {
+                String token = jwtService.generateToken(user);
+
+                UserResponseDto userResponseDto = modelMapper.map(user, UserResponseDto.class);
+
+                UserLoginResponseDto response = new UserLoginResponseDto(
+                        token,
+                        request.getToken(),
+                        userResponseDto
+                );
+
+                return response;
+            } else {
+                throw new BadRequestException("Invalid Token!");
+            }
+        }catch (Exception e){
+            throw new BadRequestException("Invalid Token!");
+        }
     }
 }

@@ -2,8 +2,10 @@ package com.redbakery.redbakeryservice.controller;
 
 import com.redbakery.redbakeryservice.common.ApplicationRoute;
 import com.redbakery.redbakeryservice.common.CommonResponse;
+import com.redbakery.redbakeryservice.dto.request.RefreshTokenRequestDto;
 import com.redbakery.redbakeryservice.dto.request.UserLoginRequestDto;
 import com.redbakery.redbakeryservice.dto.request.UserSaveRequestDto;
+import com.redbakery.redbakeryservice.dto.response.RefreshTokenResponseDto;
 import com.redbakery.redbakeryservice.dto.response.UserLoginResponseDto;
 import com.redbakery.redbakeryservice.dto.response.UserResponseDto;
 import com.redbakery.redbakeryservice.service.AuthenticationService;
@@ -27,7 +29,7 @@ public class AuthenticationController {
     public ResponseEntity<CommonResponse> UserLogin(@RequestBody @Valid UserLoginRequestDto request){
         ResponseEntity<CommonResponse> response = null;
 
-        UserLoginResponseDto userLoginResponseDto = authenticationService.userLogin(request);
+        UserLoginResponseDto userLoginResponseDto = authenticationService.UserLogin(request);
 
         response = new ResponseEntity<CommonResponse>(
                 new CommonResponse(true, "Login Successful!", userLoginResponseDto),
@@ -37,5 +39,17 @@ public class AuthenticationController {
         return  response;
     }
 
+    @PostMapping(ApplicationRoute.Authentication.RefreshToken)
+    public ResponseEntity<CommonResponse> RefreshToken(@RequestBody RefreshTokenRequestDto request){
+        ResponseEntity<CommonResponse> response = null;
 
+        UserLoginResponseDto responseDto = authenticationService.GetRefreshToken(request);
+
+        response = new ResponseEntity<CommonResponse>(
+                new CommonResponse(true, "Token refresh successful!", responseDto),
+                HttpStatus.OK
+        );
+
+        return  response;
+    }
 }

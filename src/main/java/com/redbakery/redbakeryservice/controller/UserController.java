@@ -1,5 +1,6 @@
 package com.redbakery.redbakeryservice.controller;
 
+import com.redbakery.redbakeryservice.common.ApplicationRoute;
 import com.redbakery.redbakeryservice.common.CommonResponse;
 import com.redbakery.redbakeryservice.dto.request.UserSaveRequestDto;
 import com.redbakery.redbakeryservice.dto.response.UserResponseDto;
@@ -16,12 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/user")
+@RequestMapping(ApplicationRoute.User.Root)
 public class UserController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
 
-    @PostMapping("/register")
+    @PostMapping(ApplicationRoute.User.Save)
     public ResponseEntity<CommonResponse> Register(@RequestBody @Valid UserSaveRequestDto userSaveRequestDto) {
         ResponseEntity<CommonResponse> response = null;
 

@@ -16,4 +16,13 @@ public class ApplicationRoute {
         public static final String Login = "/login";
         public static final String RefreshToken = "/refresh-token";
     }
+
+    public class FoodCategory {
+        public static final String Root = ApplicationRoute.Root + "/food-category";
+        public static final String GetAll = "/";
+        public static final String GetById = "/{id}";
+        public static final String Save = "/";
+        public static final String Update = "/{id}";
+        public static final String Delete = "/{id}";
+    }
 }

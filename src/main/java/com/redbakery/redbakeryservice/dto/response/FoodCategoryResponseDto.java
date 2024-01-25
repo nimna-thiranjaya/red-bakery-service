@@ -1,10 +1,7 @@
-package com.redbakery.redbakeryservice.dto.request;
+package com.redbakery.redbakeryservice.dto.response;
 
 import com.redbakery.redbakeryservice.model.FoodType;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,18 +9,23 @@ import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.util.Date;
 import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class FoodCategoryRequestDto {
+public class FoodCategoryResponseDto {
     private Long foodCategoryId;
 
-    @NotEmpty(message = "Food Category Name is required")
     private String foodCategoryName;
 
-    @Size(max = 500, message = "Description should not be more than 500 characters")
     private String foodCategoryDescription;
+
+    private Integer status;
+
+    private Date createdAt;
+
+    private Date updatedAt;
 }

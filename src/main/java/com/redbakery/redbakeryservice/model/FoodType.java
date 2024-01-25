@@ -5,6 +5,8 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "food_type")
 @Data
@@ -32,10 +34,10 @@ public class FoodType {
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
-    private java.sql.Timestamp createdAt;
+    private Date createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    private java.sql.Timestamp updatedAt;
+    private Date updatedAt;
 
 }

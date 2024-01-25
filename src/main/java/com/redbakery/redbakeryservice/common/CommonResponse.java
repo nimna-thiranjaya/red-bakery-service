@@ -13,8 +13,14 @@ import java.time.Instant;
 @ToString
 public class CommonResponse {
     private boolean isSuccess;
-    private int code;
     private String message;
     private Instant timestamp;
     private Object dataSet;
+
+    public CommonResponse(boolean isSuccess, String message, Object dataSet) {
+        this.isSuccess = isSuccess;
+        this.message = message;
+        this.timestamp = Instant.now();
+        this.dataSet = dataSet;
+    }
 }

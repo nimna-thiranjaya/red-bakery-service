@@ -1,4 +1,6 @@
 package com.redbakery.redbakeryservice.model;
 
-public class SampleModel {
+public enum Role {
+    USER,
+    ADMIN
 }

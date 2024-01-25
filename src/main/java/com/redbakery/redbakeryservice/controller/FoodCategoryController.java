@@ -26,6 +26,7 @@ public class FoodCategoryController {
     private final AuthenticationService authenticationService;
 
     @PostMapping(ApplicationRoute.FoodCategory.Save)
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<CommonResponse> SaveFoodCategory(@RequestBody @Valid FoodCategoryRequestDto request) {
 
         AuthenticationTicketDto authTicket = authenticationService.AuthenticationTicket();

@@ -1,5 +1,6 @@
 package com.redbakery.redbakeryservice.service.impl;
 
+import com.redbakery.redbakeryservice.dto.AuthenticationTicketDto;
 import com.redbakery.redbakeryservice.dto.request.RefreshTokenRequestDto;
 import com.redbakery.redbakeryservice.dto.request.UserLoginRequestDto;
 import com.redbakery.redbakeryservice.dto.request.UserSaveRequestDto;
@@ -15,6 +16,9 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -80,4 +84,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new BadRequestException("Invalid Token!");
         }
     }
+
+    @Override
+    public AuthenticationTicketDto AuthenticationTicket() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+            User user = userRepository.findByEmail(userDetails.getUsername()).get();
+
+            AuthenticationTicketDto authTicket = modelMapper.map(user, AuthenticationTicketDto.class);
+
+            return authTicket;
+
+        }catch (Exception e){
+            throw new BadRequestException(e.getMessage());
+        }
+    }
+
+
 }

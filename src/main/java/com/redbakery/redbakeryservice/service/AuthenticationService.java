@@ -1,5 +1,6 @@
 package com.redbakery.redbakeryservice.service;
 
+import com.redbakery.redbakeryservice.dto.AuthenticationTicketDto;
 import com.redbakery.redbakeryservice.dto.request.RefreshTokenRequestDto;
 import com.redbakery.redbakeryservice.dto.request.UserLoginRequestDto;
 import com.redbakery.redbakeryservice.dto.request.UserSaveRequestDto;
@@ -11,4 +12,7 @@ public interface AuthenticationService {
     UserLoginResponseDto UserLogin(UserLoginRequestDto request);
 
     UserLoginResponseDto GetRefreshToken(RefreshTokenRequestDto request);
+
+    AuthenticationTicketDto AuthenticationTicket();
+
 }

@@ -4,6 +4,7 @@ import com.redbakery.redbakeryservice.common.WellKnownStatus;
 import com.redbakery.redbakeryservice.dto.request.UserSaveRequestDto;
 import com.redbakery.redbakeryservice.dto.response.UserResponseDto;
 import com.redbakery.redbakeryservice.exception.BadRequestException;
+import com.redbakery.redbakeryservice.exception.NotFoundException;
 import com.redbakery.redbakeryservice.model.Role;
 import com.redbakery.redbakeryservice.model.User;
 import com.redbakery.redbakeryservice.repository.UserRepository;
@@ -64,6 +65,19 @@ public class UserServiceImpl implements UserService {
 
         UserResponseDto userResponseDto = modelMapper.map(savedUser, UserResponseDto.class);
 
+        return userResponseDto;
+    }
+
+    @Override
+    public UserResponseDto getUserProfile(Long userId) {
+        UserResponseDto userResponseDto = null;
+        User user = userRepository.getReferenceById(userId);
+
+        if (user == null)
+            throw new NotFoundException("User not found!");
+        else {
+            userResponseDto = modelMapper.map(user, UserResponseDto.class);
+        }
         return userResponseDto;
     }
 

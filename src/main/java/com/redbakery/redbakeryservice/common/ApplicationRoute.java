@@ -6,6 +6,7 @@ public class ApplicationRoute {
     public class User {
         public static final String Root = ApplicationRoute.Root + "/user";
         public static final String Save = "/register";
+        public static final String GetProfile = "/profile";
     }
 
     public class Authentication {

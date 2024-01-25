@@ -1,5 +1,6 @@
 package com.redbakery.redbakeryservice.config;
 
+import com.redbakery.redbakeryservice.exception.ForbiddenException;
 import com.redbakery.redbakeryservice.service.JwtService;
 import com.redbakery.redbakeryservice.service.UserService;
 import io.micrometer.common.util.StringUtils;

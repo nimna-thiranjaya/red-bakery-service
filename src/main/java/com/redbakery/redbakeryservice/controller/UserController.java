@@ -4,6 +4,7 @@ import com.redbakery.redbakeryservice.common.ApplicationRoute;
 import com.redbakery.redbakeryservice.common.CommonResponse;
 import com.redbakery.redbakeryservice.dto.AuthenticationTicketDto;
 import com.redbakery.redbakeryservice.dto.request.UserSaveRequestDto;
+import com.redbakery.redbakeryservice.dto.request.UserUpdateRequestDto;
 import com.redbakery.redbakeryservice.dto.response.UserResponseDto;
 import com.redbakery.redbakeryservice.service.AuthenticationService;
 import com.redbakery.redbakeryservice.service.UserService;
@@ -11,10 +12,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,7 +29,7 @@ public class UserController {
         UserResponseDto user = userService.register(userSaveRequestDto);
 
         response = new ResponseEntity<CommonResponse>(
-                new CommonResponse(true, "User registered", user),
+                new CommonResponse(true, "User registered!", user),
                 HttpStatus.CREATED
         );
 
@@ -51,8 +48,38 @@ public class UserController {
                 new CommonResponse(true, "", user),
                 HttpStatus.OK
         );
+        return response;
+    }
+
+    @PutMapping(ApplicationRoute.User.UpdateProfile)
+    ResponseEntity<CommonResponse> UpdateUserProfile (@RequestBody @Valid UserUpdateRequestDto userUpdateRequestDto){
+        ResponseEntity<CommonResponse> response = null;
+
+        AuthenticationTicketDto authTicket = authenticationService.AuthenticationTicket();
+
+        UserResponseDto user = userService.updateUserProfile(authTicket.getUserId(), userUpdateRequestDto);
+
+        response = new ResponseEntity<CommonResponse>(
+                new CommonResponse(true, "User profile updated!", user),
+                HttpStatus.OK
+        );
 
         return response;
+    }
 
+    @DeleteMapping(ApplicationRoute.User.DeleteProfile)
+    ResponseEntity<CommonResponse> DeleteUserProfile (){
+        ResponseEntity<CommonResponse> response = null;
+
+        AuthenticationTicketDto authTicket = authenticationService.AuthenticationTicket();
+
+        userService.deleteUserProfile(authTicket.getUserId());
+
+        response = new ResponseEntity<CommonResponse>(
+                new CommonResponse(true, "User profile deleted!", null),
+                HttpStatus.OK
+        );
+
+        return response;
     }
 }

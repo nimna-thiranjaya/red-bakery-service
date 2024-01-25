@@ -2,6 +2,7 @@ package com.redbakery.redbakeryservice.service.impl;
 
 import com.redbakery.redbakeryservice.common.WellKnownStatus;
 import com.redbakery.redbakeryservice.dto.request.UserSaveRequestDto;
+import com.redbakery.redbakeryservice.dto.request.UserUpdateRequestDto;
 import com.redbakery.redbakeryservice.dto.response.UserResponseDto;
 import com.redbakery.redbakeryservice.exception.BadRequestException;
 import com.redbakery.redbakeryservice.exception.NotFoundException;
@@ -32,7 +33,7 @@ public class UserServiceImpl implements UserService {
         return new UserDetailsService() {
             @Override
             public UserDetails loadUserByUsername(String username) {
-                return userRepository.findByEmail(username)
+                return userRepository.findByEmailAndStatus(username, WellKnownStatus.ACTIVE.getValue())
                         .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
             }
         };
@@ -73,7 +74,7 @@ public class UserServiceImpl implements UserService {
         UserResponseDto userResponseDto = null;
         User user = userRepository.getReferenceById(userId);
 
-        if (user == null)
+        if (user == null || user.getStatus() == WellKnownStatus.DELETED.getValue())
             throw new NotFoundException("User not found!");
         else {
             userResponseDto = modelMapper.map(user, UserResponseDto.class);
@@ -81,4 +82,45 @@ public class UserServiceImpl implements UserService {
         return userResponseDto;
     }
 
+    @Override
+    public UserResponseDto updateUserProfile(Long userId, UserUpdateRequestDto userUpdateRequestDto) {
+        UserResponseDto userResponseDto = null;
+        User user = userRepository.getReferenceById(userId);
+
+        if (user != null && user.getStatus() != WellKnownStatus.DELETED.getValue()) {
+            user.setFirstName(userUpdateRequestDto.getFirstName());
+            user.setLastName(userUpdateRequestDto.getLastName());
+            user.setEmail(userUpdateRequestDto.getEmail());
+            user.setPhoneNumber(userUpdateRequestDto.getPhoneNumber());
+            user.setProfileImage(userUpdateRequestDto.getProfileImage());
+
+            try{
+                Role role = Role.valueOf(userUpdateRequestDto.getRole().toUpperCase());
+                user.setRole(role);
+            }catch (IllegalArgumentException e){
+                throw new BadRequestException("Invalid Role!");
+            }
+
+            User savedUser = userRepository.save(user);
+
+            userResponseDto = modelMapper.map(savedUser, UserResponseDto.class);
+
+        } else {
+            throw new NotFoundException("User not found!");
+        }
+        return userResponseDto;
+    }
+
+    @Override
+    public void deleteUserProfile(Long userId) {
+        User user = userRepository.getReferenceById(userId);
+
+        if(user != null && user.getStatus() != WellKnownStatus.DELETED.getValue()){
+            user.setStatus(WellKnownStatus.DELETED.getValue());
+
+            userRepository.save(user);
+        }else {
+            throw new NotFoundException("User not found!");
+        }
+    }
 }

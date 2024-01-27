@@ -16,4 +16,6 @@ public interface FoodCategoryService {
     FoodCategoryResponseDto updateFoodCategory(AuthenticationTicketDto authTicket, Long id, FoodCategoryRequestDto request);
 
     FoodCategoryResponseDto activeInactiveFoodCategory(AuthenticationTicketDto authTicket, Long id, String status);
+
+    void deleteFoodCategory(AuthenticationTicketDto authTicket, Long id);
 }

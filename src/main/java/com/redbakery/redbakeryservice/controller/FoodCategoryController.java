@@ -92,18 +92,33 @@ public class FoodCategoryController {
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<CommonResponse> ActiveInactiveFoodCategory(@PathVariable Long id, @RequestParam(name = "status") String status) {
 
-            AuthenticationTicketDto authTicket = authenticationService.AuthenticationTicket();
+        AuthenticationTicketDto authTicket = authenticationService.AuthenticationTicket();
 
-            FoodCategoryResponseDto foodCategoryResponseDto = foodCategoryService.activeInactiveFoodCategory(authTicket, id, status);
+        FoodCategoryResponseDto foodCategoryResponseDto = foodCategoryService.activeInactiveFoodCategory(authTicket, id, status);
 
-            String message = status.toLowerCase().equals("active") ? "Food Category Activated!" : "Food Category Inactivated!";
+        String message = status.toLowerCase().equals("active") ? "Food Category Activated!" : "Food Category Inactivated!";
 
-            ResponseEntity<CommonResponse> response = new ResponseEntity<CommonResponse>(
-                    new CommonResponse(true, message, foodCategoryResponseDto),
-                    HttpStatus.OK
-            );
+        ResponseEntity<CommonResponse> response = new ResponseEntity<CommonResponse>(
+                new CommonResponse(true, message, foodCategoryResponseDto),
+                HttpStatus.OK
+        );
 
-            return response;
+        return response;
+    }
 
+    @DeleteMapping(ApplicationRoute.FoodCategory.Delete)
+    @PreAuthorize("hasAuthority('ADMIN')")
+    ResponseEntity<CommonResponse> DeleteFoodCategory(@PathVariable Long id) {
+
+        AuthenticationTicketDto authTicket = authenticationService.AuthenticationTicket();
+
+        foodCategoryService.deleteFoodCategory(authTicket, id);
+
+        ResponseEntity<CommonResponse> response = new ResponseEntity<CommonResponse>(
+                new CommonResponse(true, "Food Category Deleted!", null),
+                HttpStatus.OK
+        );
+
+        return response;
     }
 }

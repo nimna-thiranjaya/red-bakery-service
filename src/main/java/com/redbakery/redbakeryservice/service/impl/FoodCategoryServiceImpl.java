@@ -101,6 +101,7 @@ public class FoodCategoryServiceImpl implements FoodCategoryService {
     }
 
     @Override
+    @Transactional
     public FoodCategoryResponseDto updateFoodCategory(AuthenticationTicketDto authTicket, Long id, FoodCategoryRequestDto request) {
         FoodCategory foodCategory = foodCategoryRepository.findByFoodCategoryIdAndStatusIn(id, List.of(
                 WellKnownStatus.ACTIVE.getValue(),
@@ -122,6 +123,7 @@ public class FoodCategoryServiceImpl implements FoodCategoryService {
     }
 
     @Override
+    @Transactional
     public FoodCategoryResponseDto activeInactiveFoodCategory(AuthenticationTicketDto authTicket, Long id, String status) {
         FoodCategory foodCategory = foodCategoryRepository.findByFoodCategoryIdAndStatusIn(id, List.of(
                 WellKnownStatus.ACTIVE.getValue(),
@@ -146,5 +148,23 @@ public class FoodCategoryServiceImpl implements FoodCategoryService {
         FoodCategoryResponseDto response = modelMapper.map(updatedFoodCategory, FoodCategoryResponseDto.class);
 
         return response;
+    }
+
+    @Override
+    @Transactional
+    public void deleteFoodCategory(AuthenticationTicketDto authTicket, Long id) {
+        FoodCategory foodCategory = foodCategoryRepository.findByFoodCategoryIdAndStatusIn(id, List.of(
+                WellKnownStatus.ACTIVE.getValue(),
+                WellKnownStatus.INACTIVE.getValue()
+        ));
+
+        if(foodCategory == null)
+            throw new NotFoundException("Food Category Not Found!");
+
+        foodCategory.setStatus(WellKnownStatus.DELETED.getValue());
+        foodCategory.setUpdatedBy(authTicket.getUserId());
+
+        foodCategoryRepository.save(foodCategory);
+
     }
 }

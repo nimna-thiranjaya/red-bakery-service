@@ -26,4 +26,15 @@ public class ApplicationRoute {
         public static final String ActiveInactive = "active-inactive/{id}";
         public static final String Delete = "/{id}";
     }
+
+    public class FoodType {
+        public static final String Root = ApplicationRoute.Root + "/food-type";
+        public static final String GetAll = "/";
+        public static final String GetById = "/{id}";
+        public static final String Save = "/";
+        public static final String Update = "/{id}";
+        public static final String ActiveInactive = "active-inactive/{id}";
+        public static final String Delete = "/{id}";
+    }
 }
+

@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.Date;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,12 +21,22 @@ public class ProductRequestDto {
 
     private String productDescription;
 
-    @NotEmpty(message = "Product Price is required")
+    @NotNull(message = "Product Price is required")
     private Double productPrice;
 
     @NotEmpty(message = "Product Image is required")
     private String productImage;
 
-    @NotNull(message = "Food Type Id is required")
-    private Integer foodTypeId;
+    @NotNull(message = "Food Type is required")
+    private Long foodTypeId;
+
+    private Boolean isDiscounted;
+
+    private Double discountPercentage;
+
+    private Double newPrice;
+
+    private Date startDate;
+
+    private Date endDate;
 }

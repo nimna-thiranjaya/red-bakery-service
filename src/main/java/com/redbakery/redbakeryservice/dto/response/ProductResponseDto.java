@@ -23,8 +23,6 @@ public class ProductResponseDto {
     private Boolean isDiscounted;
     private Integer status;
     private Double discountPercentage;
-    private Double newPrice;
-    private Double discountPrice;
     private Date startDate;
     private Date endDate;
 }

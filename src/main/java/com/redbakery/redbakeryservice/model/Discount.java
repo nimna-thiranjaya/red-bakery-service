@@ -1,10 +1,12 @@
 package com.redbakery.redbakeryservice.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.util.Date;
 
 @Entity
+@Data
 @Table(name = "discount")
 public class Discount {
     @Id
@@ -31,8 +33,4 @@ public class Discount {
 
     @Column(name="end_date", nullable = false)
     private Date endDate;
-
-    @OneToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
 }

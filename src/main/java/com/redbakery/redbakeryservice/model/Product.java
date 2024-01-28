@@ -1,12 +1,14 @@
 package com.redbakery.redbakeryservice.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 
 @Entity
+@Data
 @Table(name = "product")
 public class Product {
     @Id
@@ -48,4 +50,8 @@ public class Product {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
+
+    @OneToOne
+    @JoinColumn(name = "discount_id", nullable = true)
+    private Discount discount;
 }

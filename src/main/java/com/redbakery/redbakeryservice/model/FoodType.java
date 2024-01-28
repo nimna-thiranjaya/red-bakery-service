@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "food_type")
@@ -28,10 +29,6 @@ public class FoodType {
     @Column(name = "updated_by", nullable = false)
     private Long updatedBy;
 
-    @ManyToOne
-    @JoinColumn(name = "food_category_id", nullable = false)
-    private FoodCategory foodCategory;
-
     @Column(name = "status", nullable = false)
     private Integer status;
 
@@ -43,4 +40,10 @@ public class FoodType {
     @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
 
+    @ManyToOne
+    @JoinColumn(name = "food_category_id", nullable = false)
+    private FoodCategory foodCategory;
+
+    @OneToMany(mappedBy = "foodType")
+    private Set<Product> products;
 }

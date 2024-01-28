@@ -4,6 +4,7 @@ package com.redbakery.redbakeryservice.common;
 public enum WellKnownStatus {
     ACTIVE(1),
     INACTIVE(2),
+    PENDING(6),
     CONFIRMED(3),
     REJECTED(4),
     DELETED(5);

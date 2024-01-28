@@ -16,4 +16,6 @@ public interface FoodCategoryRepository extends JpaRepository<FoodCategory, Long
     List<FoodCategory> findAllByStatusIn(List<Integer> status);
 
     FoodCategory findByFoodCategoryIdAndStatusIn(Long id, List<Integer> status);
+
+    Boolean existsByFoodCategoryIdAndStatusIn(Long id, List<Integer> status);
 }

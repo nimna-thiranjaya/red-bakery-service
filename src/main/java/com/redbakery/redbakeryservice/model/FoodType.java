@@ -25,6 +25,9 @@ public class FoodType {
     @Column(name = "added_by", nullable = false)
     private Long addedBy;
 
+    @Column(name = "updated_by", nullable = false)
+    private Long updatedBy;
+
     @ManyToOne
     @JoinColumn(name = "food_category_id", nullable = false)
     private FoodCategory foodCategory;

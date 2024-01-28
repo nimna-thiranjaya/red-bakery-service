@@ -25,6 +25,9 @@ public class Product {
     @Column(name = "product_image", nullable = true)
     private String productImage;
 
+    @Column(name = "is_discounted", nullable = false)
+    private Boolean isDiscounted;
+
     @Column(name = "status", nullable = false)
     private Integer status;
 

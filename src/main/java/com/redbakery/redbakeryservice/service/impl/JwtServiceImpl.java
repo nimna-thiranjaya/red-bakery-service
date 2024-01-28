@@ -12,6 +12,7 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -78,7 +79,7 @@ public class JwtServiceImpl implements JwtService {
     public User getUserFromJWT(String token) {
         String userEmail = extractUserName(token);
 
-        return userRepository.findByEmail(userEmail).orElseThrow(() -> new NotFoundException("User not found!"));
+        return userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
     }
 
     private boolean isTokenExpired(String token) {

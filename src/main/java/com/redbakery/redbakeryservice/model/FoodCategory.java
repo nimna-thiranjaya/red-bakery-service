@@ -25,6 +25,9 @@ public class FoodCategory {
     @Column(name = "added_by", nullable = false)
     private Long addedBy;
 
+    @Column(name = "updated_by", nullable = false)
+    private Long updatedBy;
+
     @OneToMany(mappedBy="foodCategory")
     private Set<FoodType> foodTypes;
 

@@ -4,6 +4,7 @@ import com.redbakery.redbakeryservice.model.FoodCategory;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,6 +26,6 @@ public class FoodTypeRequestDto {
     @Size(max = 500, message = "Description should not be more than 500 characters")
     private String foodTypeDescription;
 
-    @NotEmpty(message = "Food Category is required")
-    private FoodCategory foodCategory;
+    @NotNull(message = "Food Category is required")
+    private Long foodCategoryId;
 }

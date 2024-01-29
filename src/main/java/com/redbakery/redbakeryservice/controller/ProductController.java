@@ -27,7 +27,7 @@ public class ProductController {
 
     @PostMapping(ApplicationRoute.Product.Save)
     @PreAuthorize("hasAuthority('ADMIN')")
-    ResponseEntity<CommonResponse> SaveProduct(@RequestBody @Valid ProductRequestDto request){
+    ResponseEntity<CommonResponse> SaveProduct(@RequestBody @Valid ProductRequestDto request) {
         AuthenticationTicketDto authTicket = authenticationService.AuthenticationTicket();
 
         ProductResponseDto productResponseDto = productService.saveProduct(authTicket, request);
@@ -42,7 +42,7 @@ public class ProductController {
 
     @GetMapping(ApplicationRoute.Product.GetAll)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    ResponseEntity<CommonResponse> GetAllProducts(){
+    ResponseEntity<CommonResponse> GetAllProducts() {
         AuthenticationTicketDto authTicket = authenticationService.AuthenticationTicket();
 
         List<ProductResponseDto> productResponseDto = productService.getAllProducts(authTicket);
@@ -57,13 +57,28 @@ public class ProductController {
 
     @GetMapping(ApplicationRoute.Product.GetById)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    ResponseEntity<CommonResponse> GetProductById(@PathVariable("id") Long id){
+    ResponseEntity<CommonResponse> GetProductById(@PathVariable("id") Long id) {
         AuthenticationTicketDto authTicket = authenticationService.AuthenticationTicket();
 
         ProductResponseDto productResponseDto = productService.getProductById(authTicket, id);
 
         ResponseEntity<CommonResponse> response = new ResponseEntity<CommonResponse>(
                 new CommonResponse(true, "", productResponseDto),
+                HttpStatus.OK
+        );
+
+        return response;
+    }
+
+    @DeleteMapping(ApplicationRoute.Product.Delete)
+    @PreAuthorize("hasAuthority('ADMIN')")
+    ResponseEntity<CommonResponse> DeleteProductById(@PathVariable("id") Long id) {
+        AuthenticationTicketDto authTicket = authenticationService.AuthenticationTicket();
+
+        productService.deleteProductById(authTicket, id);
+
+        ResponseEntity<CommonResponse> response = new ResponseEntity<CommonResponse>(
+                new CommonResponse(true,"Product Deleted!", null),
                 HttpStatus.OK
         );
 

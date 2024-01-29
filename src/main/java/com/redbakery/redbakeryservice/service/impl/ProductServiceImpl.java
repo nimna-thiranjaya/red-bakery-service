@@ -38,8 +38,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponseDto saveProduct(AuthenticationTicketDto authTicket, ProductRequestDto request) {
         FoodType foodType = foodTypeRepository.findByFoodTypeIdAndStatusIn(request.getFoodTypeId(), List.of(WellKnownStatus.ACTIVE.getValue()));
 
-        if (foodType == null)
-            throw new BadRequestException("Food Type Not Found!");
+        if (foodType == null) throw new BadRequestException("Food Type Not Found!");
 
         Discount createdDiscount = null;
         if (request.getIsDiscounted()) {
@@ -96,7 +95,37 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponseDto getProductById(AuthenticationTicketDto authTicket, Long id) {
-        return null;
+        String userRole = authTicket.getRole();
+
+        Product product = null;
+
+        if (userRole.equalsIgnoreCase(Role.ADMIN.name())) {
+            product = productRepository.findByProductIdAndStatusIn(id, List.of(WellKnownStatus.ACTIVE.getValue(), WellKnownStatus.INACTIVE.getValue()));
+        } else if (userRole.equalsIgnoreCase(Role.USER.name())) {
+            product = productRepository.findByProductIdAndStatusIn(id, List.of(WellKnownStatus.ACTIVE.getValue()));
+        }
+
+        return mapProductToProductResponseDto(product, userRole);
+    }
+
+    @Override
+    @Transactional
+    public void deleteProductById(AuthenticationTicketDto authTicket, Long id) {
+        Product product = productRepository.findByProductIdAndStatusIn(id, List.of(WellKnownStatus.ACTIVE.getValue(), WellKnownStatus.INACTIVE.getValue()));
+
+        if (product == null) throw new BadRequestException("Product Not Found!");
+
+        product.setStatus(WellKnownStatus.DELETED.getValue());
+        product.setUpdatedBy(authTicket.getUserId());
+
+        productRepository.save(product);
+
+        if (product.getDiscount() != null) {
+            Discount discount = product.getDiscount();
+            discount.setStatus(WellKnownStatus.DELETED.getValue());
+
+            discountRepository.save(discount);
+        }
     }
 
 
@@ -109,11 +138,9 @@ public class ProductServiceImpl implements ProductService {
             if (request.getDiscountPercentage() > 100)
                 throw new BadRequestException("Discount Percentage must be less than or equal to 100!");
 
-            if (request.getStartDate() == null)
-                throw new BadRequestException("Discount Start Date is required!");
+            if (request.getStartDate() == null) throw new BadRequestException("Discount Start Date is required!");
 
-            if (request.getEndDate() == null)
-                throw new BadRequestException("Discount End Date is required!");
+            if (request.getEndDate() == null) throw new BadRequestException("Discount End Date is required!");
 
             if (request.getEndDate().before(new Date()))
                 throw new BadRequestException("Discount End Date must be in the future!");
@@ -127,11 +154,23 @@ public class ProductServiceImpl implements ProductService {
         Date currentDate = new Date();
         ProductResponseDto productResponseDto = new ProductResponseDto();
 
-        if(role.equalsIgnoreCase(Role.ADMIN.name())){
-            setGeneraleProductData(product, productResponseDto);
+        if (role.equalsIgnoreCase(Role.ADMIN.name())) {
+            productResponseDto.setProductId(product.getProductId());
+            productResponseDto.setProductName(product.getProductName());
+            productResponseDto.setProductDescription(product.getProductDescription());
+            productResponseDto.setProductImage(product.getProductImage());
+            productResponseDto.setFoodTypeId(product.getFoodType().getFoodTypeId());
+            productResponseDto.setFoodTypeName(product.getFoodType().getFoodTypeName());
+            productResponseDto.setStatus(product.getStatus());
+            productResponseDto.setIsDiscounted(product.getIsDiscounted());
             if (product.getIsDiscounted()) {
-                setGeneralDiscountData(product, productResponseDto);
-            }else{
+                productResponseDto.setDiscountPercentage(product.getDiscount().getDiscountPercentage());
+                productResponseDto.setProductPrice(product.getProductPrice());
+                productResponseDto.setStartDate(product.getDiscount().getStartDate());
+                productResponseDto.setEndDate(product.getDiscount().getEndDate());
+                productResponseDto.setNewPrice(product.getDiscount().getNewPrice());
+                productResponseDto.setDiscountPrice(product.getDiscount().getDiscountPrice());
+            } else {
                 productResponseDto.setProductPrice(product.getProductPrice());
                 productResponseDto.setDiscountPercentage(null);
                 productResponseDto.setNewPrice(null);
@@ -139,12 +178,24 @@ public class ProductServiceImpl implements ProductService {
                 productResponseDto.setStartDate(null);
                 productResponseDto.setEndDate(null);
             }
-        }else{
-            setGeneraleProductData(product, productResponseDto);
-            ;
+        } else {
+            productResponseDto.setProductId(product.getProductId());
+            productResponseDto.setProductName(product.getProductName());
+            productResponseDto.setProductDescription(product.getProductDescription());
+            productResponseDto.setProductImage(product.getProductImage());
+            productResponseDto.setFoodTypeId(product.getFoodType().getFoodTypeId());
+            productResponseDto.setFoodTypeName(product.getFoodType().getFoodTypeName());
+            productResponseDto.setStatus(product.getStatus());
+            productResponseDto.setIsDiscounted(false);
             if (product.getIsDiscounted()) {
                 if (currentDate.after(product.getDiscount().getStartDate()) && currentDate.before(product.getDiscount().getEndDate())) {
-                    setGeneralDiscountData(product, productResponseDto);
+                    productResponseDto.setIsDiscounted(product.getIsDiscounted());
+                    productResponseDto.setDiscountPercentage(product.getDiscount().getDiscountPercentage());
+                    productResponseDto.setProductPrice(product.getProductPrice());
+                    productResponseDto.setStartDate(product.getDiscount().getStartDate());
+                    productResponseDto.setEndDate(product.getDiscount().getEndDate());
+                    productResponseDto.setNewPrice(product.getDiscount().getNewPrice());
+                    productResponseDto.setDiscountPrice(product.getDiscount().getDiscountPrice());
                 } else {
                     productResponseDto.setProductPrice(product.getProductPrice());
                     productResponseDto.setDiscountPercentage(null);
@@ -166,24 +217,5 @@ public class ProductServiceImpl implements ProductService {
         return productResponseDto;
     }
 
-    private void setGeneralDiscountData(Product product, ProductResponseDto productResponseDto) {
-        productResponseDto.setDiscountPercentage(product.getDiscount().getDiscountPercentage());
-        productResponseDto.setProductPrice(product.getProductPrice());
-        productResponseDto.setStartDate(product.getDiscount().getStartDate());
-        productResponseDto.setEndDate(product.getDiscount().getEndDate());
-        productResponseDto.setNewPrice(product.getDiscount().getNewPrice());
-        productResponseDto.setDiscountPrice(product.getDiscount().getDiscountPrice());
-    }
-
-    private void setGeneraleProductData(Product product, ProductResponseDto productResponseDto) {
-        productResponseDto.setProductId(product.getProductId());
-        productResponseDto.setProductName(product.getProductName());
-        productResponseDto.setProductDescription(product.getProductDescription());
-        productResponseDto.setProductImage(product.getProductImage());
-        productResponseDto.setFoodTypeId(product.getFoodType().getFoodTypeId());
-        productResponseDto.setFoodTypeName(product.getFoodType().getFoodTypeName());
-        productResponseDto.setStatus(product.getStatus());
-        productResponseDto.setIsDiscounted(product.getIsDiscounted());
-    }
 
 }

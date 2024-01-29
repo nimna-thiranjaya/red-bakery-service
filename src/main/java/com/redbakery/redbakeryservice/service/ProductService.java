@@ -13,4 +13,6 @@ public interface ProductService {
     List<ProductResponseDto> getAllProducts(AuthenticationTicketDto authTicket);
 
     ProductResponseDto getProductById(AuthenticationTicketDto authTicket, Long id);
+
+    void deleteProductById(AuthenticationTicketDto authTicket, Long id);
 }

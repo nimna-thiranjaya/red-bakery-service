@@ -128,6 +128,73 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    @Override
+    public ProductResponseDto activeInactiveProduct(AuthenticationTicketDto authTicket, Long id, String status) {
+        Product product = productRepository.findByProductIdAndStatusIn(id, List.of(WellKnownStatus.ACTIVE.getValue(), WellKnownStatus.INACTIVE.getValue()));
+
+        if (product == null) throw new BadRequestException("Product Not Found!");
+
+        if (status.equalsIgnoreCase("active")) {
+            product.setStatus(WellKnownStatus.ACTIVE.getValue());
+        } else if (status.equalsIgnoreCase("inactive")) {
+            product.setStatus(WellKnownStatus.INACTIVE.getValue());
+        } else {
+            throw new BadRequestException("Invalid Status!");
+        }
+
+        product.setUpdatedBy(authTicket.getUserId());
+
+        product = productRepository.save(product);
+
+        return mapProductToProductResponseDto(product, authTicket.getRole());
+    }
+
+    @Override
+    public List<ProductResponseDto> getProductByFoodType(AuthenticationTicketDto authTicket, Long id) {
+        String userRole = authTicket.getRole();
+
+        FoodType foodType = foodTypeRepository.findByFoodTypeIdAndStatusIn(id, List.of(WellKnownStatus.ACTIVE.getValue()));
+
+        if (foodType == null) throw new BadRequestException("Food Type Not Found!");
+
+        List<Product> products = new ArrayList<>();
+
+        if (userRole.equalsIgnoreCase(Role.ADMIN.name())) {
+            products = productRepository.findAllByFoodTypeAndStatusIn(foodType, List.of(WellKnownStatus.ACTIVE.getValue(), WellKnownStatus.INACTIVE.getValue()));
+        } else if (userRole.equalsIgnoreCase(Role.USER.name())) {
+            products = productRepository.findAllByFoodTypeAndStatusIn(foodType, List.of(WellKnownStatus.ACTIVE.getValue()));
+        }
+
+        List<ProductResponseDto> productResponseDtos = new ArrayList<>();
+
+        for (Product product : products) {
+            productResponseDtos.add(mapProductToProductResponseDto(product, userRole));
+        }
+
+        return productResponseDtos;
+    }
+
+    @Override
+    public List<ProductResponseDto> searchProduct(AuthenticationTicketDto authTicket, String name) {
+        String userRole = authTicket.getRole();
+
+        List<Product> products = new ArrayList<>();
+
+        if (userRole.equalsIgnoreCase(Role.ADMIN.name())) {
+            products = productRepository.findAllByProductNameContainingIgnoreCaseAndStatusIn(name, List.of(WellKnownStatus.ACTIVE.getValue(), WellKnownStatus.INACTIVE.getValue()));
+        } else if (userRole.equalsIgnoreCase(Role.USER.name())) {
+            products = productRepository.findAllByProductNameContainingIgnoreCaseAndStatusIn(name, List.of(WellKnownStatus.ACTIVE.getValue()));
+        }
+
+        List<ProductResponseDto> productResponseDtos = new ArrayList<>();
+
+        for (Product product : products) {
+            productResponseDtos.add(mapProductToProductResponseDto(product, userRole));
+        }
+
+        return productResponseDtos;
+    }
+
 
     private void discountRequestValidation(ProductRequestDto request) {
         if (request.getIsDiscounted()) {

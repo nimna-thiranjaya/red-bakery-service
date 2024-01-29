@@ -15,4 +15,10 @@ public interface ProductService {
     ProductResponseDto getProductById(AuthenticationTicketDto authTicket, Long id);
 
     void deleteProductById(AuthenticationTicketDto authTicket, Long id);
+
+    ProductResponseDto activeInactiveProduct(AuthenticationTicketDto authTicket, Long id, String status);
+
+    List<ProductResponseDto> getProductByFoodType(AuthenticationTicketDto authTicket, Long id);
+
+    List<ProductResponseDto> searchProduct(AuthenticationTicketDto authTicket, String name);
 }

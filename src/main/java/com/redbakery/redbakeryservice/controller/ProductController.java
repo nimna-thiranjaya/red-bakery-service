@@ -5,6 +5,7 @@ import com.redbakery.redbakeryservice.common.CommonPaginatedResponse;
 import com.redbakery.redbakeryservice.common.CommonResponse;
 import com.redbakery.redbakeryservice.dto.AuthenticationTicketDto;
 import com.redbakery.redbakeryservice.dto.request.ProductRequestDto;
+import com.redbakery.redbakeryservice.dto.response.FoodTypeResponseDto;
 import com.redbakery.redbakeryservice.dto.response.ProductResponseDto;
 import com.redbakery.redbakeryservice.service.AuthenticationService;
 import com.redbakery.redbakeryservice.service.ProductService;
@@ -79,6 +80,51 @@ public class ProductController {
 
         ResponseEntity<CommonResponse> response = new ResponseEntity<CommonResponse>(
                 new CommonResponse(true,"Product Deleted!", null),
+                HttpStatus.OK
+        );
+
+        return response;
+    }
+
+    @PutMapping(ApplicationRoute.Product.ActiveInactive)
+    @PreAuthorize("hasAuthority('ADMIN')")
+    ResponseEntity<CommonResponse> ActiveInactiveProduct(@PathVariable("id") Long id, @RequestParam(name = "status") String status) {
+        AuthenticationTicketDto authTicket = authenticationService.AuthenticationTicket();
+
+        ProductResponseDto productResponseDto = productService.activeInactiveProduct(authTicket, id, status);
+
+        String message = status.toLowerCase().equals("active") ? "Product Activated!" : "Product Inactivated!";
+
+        return new ResponseEntity<CommonResponse>(
+                new CommonResponse(true, message, productResponseDto),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping(ApplicationRoute.Product.GetByFoodType)
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    ResponseEntity<CommonResponse> GetProductByFoodType(@PathVariable("id") Long id) {
+        AuthenticationTicketDto authTicket = authenticationService.AuthenticationTicket();
+
+        List<ProductResponseDto> productResponseDto = productService.getProductByFoodType(authTicket, id);
+
+        ResponseEntity<CommonResponse> response = new ResponseEntity<CommonResponse>(
+                new CommonResponse(true, "", productResponseDto),
+                HttpStatus.OK
+        );
+
+        return response;
+    }
+
+    @GetMapping(ApplicationRoute.Product.SearchProduct)
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    ResponseEntity<CommonResponse> SearchProduct(@RequestParam(name = "name") String name) {
+        AuthenticationTicketDto authTicket = authenticationService.AuthenticationTicket();
+
+        List<ProductResponseDto> productResponseDto = productService.searchProduct(authTicket, name);
+
+        ResponseEntity<CommonResponse> response = new ResponseEntity<CommonResponse>(
+                new CommonResponse(true, "", productResponseDto),
                 HttpStatus.OK
         );
 

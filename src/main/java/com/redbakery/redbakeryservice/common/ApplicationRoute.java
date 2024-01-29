@@ -47,6 +47,7 @@ public class ApplicationRoute {
         public static final String ActiveInactive = "/{id}/active-inactive";
         public static final String Delete = "/{id}";
         public static final String GetByFoodType = "/food-type/{id}";
+        public static final String SearchProduct = "/search";
     }
 }
 

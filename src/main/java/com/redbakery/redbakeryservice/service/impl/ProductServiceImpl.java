@@ -195,6 +195,70 @@ public class ProductServiceImpl implements ProductService {
         return productResponseDtos;
     }
 
+    @Override
+    @Transactional
+    public ProductResponseDto updateProduct(AuthenticationTicketDto authTicket, Long id, ProductRequestDto request) {
+        Product product = productRepository.findByProductIdAndStatusIn(id, List.of(WellKnownStatus.ACTIVE.getValue(), WellKnownStatus.INACTIVE.getValue()));
+
+        if (product == null) throw new BadRequestException("Product Not Found!");
+
+        FoodType foodType = foodTypeRepository.findByFoodTypeIdAndStatusIn(request.getFoodTypeId(), List.of(WellKnownStatus.ACTIVE.getValue()));
+
+        if (foodType == null) throw new BadRequestException("Food Type Not Found!");
+
+        Discount createdDiscount = null;
+        Discount discount = new Discount();
+        if (request.getIsDiscounted()) {
+            //validate discount request
+            if (product.getDiscount() == null) {
+                discountRequestValidation(request);
+
+                discount = modelMapper.map(request, Discount.class);
+
+                if (request.getNewPrice() != null) {
+                    discount.setDiscountPrice(request.getNewPrice() - (request.getNewPrice() * request.getDiscountPercentage() / 100));
+                    discount.setNewPrice(request.getNewPrice());
+                } else {
+                    discount.setDiscountPrice(request.getProductPrice() - (request.getProductPrice() * request.getDiscountPercentage() / 100));
+                    discount.setNewPrice(null);
+                }
+                discount.setAddedBy(authTicket.getUserId());
+                discount.setStatus(WellKnownStatus.ACTIVE.getValue());
+            } else {
+                discountRequestValidation(request);
+
+                discount = product.getDiscount();
+
+                if (request.getNewPrice() != null) {
+                    discount.setDiscountPrice(request.getNewPrice() - (request.getNewPrice() * request.getDiscountPercentage() / 100));
+                    discount.setNewPrice(request.getNewPrice());
+                } else {
+                    discount.setDiscountPrice(request.getProductPrice() - (request.getProductPrice() * request.getDiscountPercentage() / 100));
+                    discount.setNewPrice(null);
+                }
+                discount.setAddedBy(authTicket.getUserId());
+                discount.setStatus(WellKnownStatus.ACTIVE.getValue());
+
+            }
+
+            createdDiscount = discountRepository.save(discount);
+        }
+
+        product.setProductName(request.getProductName());
+        product.setProductDescription(request.getProductDescription());
+        product.setProductImage(request.getProductImage());
+        product.setFoodType(foodType);
+        product.setProductPrice(request.getProductPrice());
+        product.setIsDiscounted(request.getIsDiscounted());
+        product.setDiscount(createdDiscount);
+        product.setUpdatedBy(authTicket.getUserId());
+
+        product = productRepository.save(product);
+
+        return mapProductToProductResponseDto(product, authTicket.getRole());
+
+    }
+
 
     private void discountRequestValidation(ProductRequestDto request) {
         if (request.getIsDiscounted()) {

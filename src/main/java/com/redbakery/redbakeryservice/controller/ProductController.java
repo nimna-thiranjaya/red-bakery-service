@@ -130,4 +130,18 @@ public class ProductController {
 
         return response;
     }
+
+    @PutMapping(ApplicationRoute.Product.Update)
+    @PreAuthorize("hasAuthority('ADMIN')")
+    ResponseEntity<CommonResponse> UpdateProduct(@PathVariable("id") Long id, @RequestBody @Valid ProductRequestDto request) {
+        AuthenticationTicketDto authTicket = authenticationService.AuthenticationTicket();
+
+        ProductResponseDto productResponseDto = productService.updateProduct(authTicket, id, request);
+
+        return new ResponseEntity<CommonResponse>(
+                new CommonResponse(true, "Product Updated!", productResponseDto),
+                HttpStatus.OK
+        );
+    }
+
 }

@@ -21,4 +21,6 @@ public interface ProductService {
     List<ProductResponseDto> getProductByFoodType(AuthenticationTicketDto authTicket, Long id);
 
     List<ProductResponseDto> searchProduct(AuthenticationTicketDto authTicket, String name);
+
+    ProductResponseDto updateProduct(AuthenticationTicketDto authTicket, Long id, ProductRequestDto request);
 }

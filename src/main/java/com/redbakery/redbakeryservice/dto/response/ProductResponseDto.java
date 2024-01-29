@@ -21,6 +21,8 @@ public class ProductResponseDto {
     private Long foodTypeId;
     private String foodTypeName;
     private Boolean isDiscounted;
+    private Double newPrice;
+    private Double discountPrice;
     private Integer status;
     private Double discountPercentage;
     private Date startDate;

@@ -97,12 +97,12 @@ public class GlobalExceptionHandler {
         );
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<CommonResponse> handleException(Exception e) {
-//        return new ResponseEntity<>(
-//                new CommonResponse(false, e.getMessage(), null),
-//                HttpStatus.INTERNAL_SERVER_ERROR
-//        );
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<CommonResponse> handleException(Exception e) {
+        return new ResponseEntity<>(
+                new CommonResponse(false, e.getMessage(), null),
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
+    }
 
 }

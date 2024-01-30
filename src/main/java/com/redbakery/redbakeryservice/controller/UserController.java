@@ -12,7 +12,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -77,6 +80,21 @@ public class UserController {
 
         response = new ResponseEntity<CommonResponse>(
                 new CommonResponse(true, "User profile deleted!", null),
+                HttpStatus.OK
+        );
+
+        return response;
+    }
+
+    @GetMapping(ApplicationRoute.User.GetAll)
+    @PreAuthorize("hasRole('ADMIN')")
+    ResponseEntity<CommonResponse> GetAllUsers(){
+        ResponseEntity<CommonResponse> response = null;
+
+        List<UserResponseDto> users = userService.getAllUsers();
+
+        response = new ResponseEntity<CommonResponse>(
+                new CommonResponse(true, "", users),
                 HttpStatus.OK
         );
 

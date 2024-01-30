@@ -3,6 +3,7 @@ package com.redbakery.redbakeryservice.service.impl;
 import com.redbakery.redbakeryservice.common.WellKnownStatus;
 import com.redbakery.redbakeryservice.dto.request.UserSaveRequestDto;
 import com.redbakery.redbakeryservice.dto.request.UserUpdateRequestDto;
+import com.redbakery.redbakeryservice.dto.response.FoodTypeResponseDto;
 import com.redbakery.redbakeryservice.dto.response.UserResponseDto;
 import com.redbakery.redbakeryservice.exception.BadRequestException;
 import com.redbakery.redbakeryservice.exception.NotFoundException;
@@ -12,11 +13,14 @@ import com.redbakery.redbakeryservice.repository.UserRepository;
 import com.redbakery.redbakeryservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -122,5 +126,15 @@ public class UserServiceImpl implements UserService {
         }else {
             throw new NotFoundException("User not found!");
         }
+    }
+
+    @Override
+    public List<UserResponseDto> getAllUsers() {
+        List<UserResponseDto> users = null;
+
+        List<User> userList = userRepository.findAllByStatus(WellKnownStatus.ACTIVE.getValue());
+        users = modelMapper.map(userList, new TypeToken<List<UserResponseDto>>(){}.getType());
+
+        return users;
     }
 }

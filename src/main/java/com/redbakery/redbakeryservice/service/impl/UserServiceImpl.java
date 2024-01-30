@@ -32,6 +32,8 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final EmailServiceImpl emailService;
+
     @Override
     public UserDetailsService userDetailService() {
         return new UserDetailsService() {
@@ -57,20 +59,25 @@ public class UserServiceImpl implements UserService {
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("Invalid Role!");
         }
+        try {
+            User user = modelMapper.map(userSaveRequestDto, User.class);
 
-        User user = modelMapper.map(userSaveRequestDto, User.class);
+            String passwordHash = passwordEncoder.encode(userSaveRequestDto.getPassword());
 
-        String passwordHash = passwordEncoder.encode(userSaveRequestDto.getPassword());
+            user.setPassword(passwordHash);
+            user.setStatus(WellKnownStatus.ACTIVE.getValue());
+            user.setIsVerified(false);
 
-        user.setPassword(passwordHash);
-        user.setStatus(WellKnownStatus.ACTIVE.getValue());
-        user.setIsVerified(false);
+            User savedUser = userRepository.save(user);
 
-        User savedUser = userRepository.save(user);
+            emailService.sendEmail(user.getEmail(), "Thank you for registering!", "Thank you for registering!");
 
-        UserResponseDto userResponseDto = modelMapper.map(savedUser, UserResponseDto.class);
+            UserResponseDto userResponseDto = modelMapper.map(savedUser, UserResponseDto.class);
 
-        return userResponseDto;
+            return userResponseDto;
+        } catch (Exception e) {
+            throw new BadRequestException(e.getMessage());
+        }
     }
 
     @Override
@@ -98,10 +105,10 @@ public class UserServiceImpl implements UserService {
             user.setPhoneNumber(userUpdateRequestDto.getPhoneNumber());
             user.setProfileImage(userUpdateRequestDto.getProfileImage());
 
-            try{
+            try {
                 Role role = Role.valueOf(userUpdateRequestDto.getRole().toUpperCase());
                 user.setRole(role);
-            }catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 throw new BadRequestException("Invalid Role!");
             }
 
@@ -119,11 +126,11 @@ public class UserServiceImpl implements UserService {
     public void deleteUserProfile(Long userId) {
         User user = userRepository.getReferenceById(userId);
 
-        if(user != null && user.getStatus() != WellKnownStatus.DELETED.getValue()){
+        if (user != null && user.getStatus() != WellKnownStatus.DELETED.getValue()) {
             user.setStatus(WellKnownStatus.DELETED.getValue());
 
             userRepository.save(user);
-        }else {
+        } else {
             throw new NotFoundException("User not found!");
         }
     }
@@ -133,7 +140,8 @@ public class UserServiceImpl implements UserService {
         List<UserResponseDto> users = null;
 
         List<User> userList = userRepository.findAllByStatus(WellKnownStatus.ACTIVE.getValue());
-        users = modelMapper.map(userList, new TypeToken<List<UserResponseDto>>(){}.getType());
+        users = modelMapper.map(userList, new TypeToken<List<UserResponseDto>>() {
+        }.getType());
 
         return users;
     }

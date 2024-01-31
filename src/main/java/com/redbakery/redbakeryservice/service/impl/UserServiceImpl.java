@@ -59,25 +59,22 @@ public class UserServiceImpl implements UserService {
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("Invalid Role!");
         }
-        try {
-            User user = modelMapper.map(userSaveRequestDto, User.class);
+        User user = modelMapper.map(userSaveRequestDto, User.class);
 
-            String passwordHash = passwordEncoder.encode(userSaveRequestDto.getPassword());
+        String passwordHash = passwordEncoder.encode(userSaveRequestDto.getPassword());
 
-            user.setPassword(passwordHash);
-            user.setStatus(WellKnownStatus.ACTIVE.getValue());
-            user.setIsVerified(false);
+        user.setPassword(passwordHash);
+        user.setStatus(WellKnownStatus.ACTIVE.getValue());
+        user.setIsVerified(false);
 
-            User savedUser = userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
-            emailService.sendEmail(user.getEmail(), "Thank you for registering!", "Thank you for registering!");
+        UserResponseDto userResponseDto = modelMapper.map(savedUser, UserResponseDto.class);
 
-            UserResponseDto userResponseDto = modelMapper.map(savedUser, UserResponseDto.class);
+        emailService.sendEmail(user.getEmail(), "Thank you for registering!", "Thank you for registering!");
 
-            return userResponseDto;
-        } catch (Exception e) {
-            throw new BadRequestException(e.getMessage());
-        }
+        return userResponseDto;
+
     }
 
     @Override

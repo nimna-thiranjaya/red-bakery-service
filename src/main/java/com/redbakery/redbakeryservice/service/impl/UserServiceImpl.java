@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -71,7 +72,12 @@ public class UserServiceImpl implements UserService {
 
         UserResponseDto userResponseDto = modelMapper.map(savedUser, UserResponseDto.class);
 
-        emailService.sendEmail(user.getEmail(), "Thank you for registering!", "Thank you for registering!");
+        // Send Email
+        HashMap<String, Object> templateData = new HashMap<>();
+        templateData.put("name", userResponseDto.getFirstName());
+
+        emailService.sendHtmlTemplateEmail(userResponseDto.getEmail(), "Welcome to Red Bakery", "RegisterEmailTemplate.ftl", templateData);
+
 
         return userResponseDto;
 

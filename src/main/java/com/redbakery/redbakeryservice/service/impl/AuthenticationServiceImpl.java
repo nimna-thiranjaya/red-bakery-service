@@ -96,6 +96,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             AuthenticationTicketDto authTicket = modelMapper.map(user, AuthenticationTicketDto.class);
 
+            authTicket.setUser(user);
+
             return authTicket;
 
         }catch (Exception e){

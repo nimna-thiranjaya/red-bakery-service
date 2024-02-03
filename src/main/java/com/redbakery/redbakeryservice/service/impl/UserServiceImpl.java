@@ -3,6 +3,7 @@ package com.redbakery.redbakeryservice.service.impl;
 import com.redbakery.redbakeryservice.common.WellKnownStatus;
 import com.redbakery.redbakeryservice.dto.request.UserSaveRequestDto;
 import com.redbakery.redbakeryservice.dto.request.UserUpdateRequestDto;
+import com.redbakery.redbakeryservice.dto.response.FoodTypeResponseDto;
 import com.redbakery.redbakeryservice.dto.response.UserResponseDto;
 import com.redbakery.redbakeryservice.exception.BadRequestException;
 import com.redbakery.redbakeryservice.exception.NotFoundException;
@@ -12,11 +13,15 @@ import com.redbakery.redbakeryservice.repository.UserRepository;
 import com.redbakery.redbakeryservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +32,8 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final EmailServiceImpl emailService;
 
     @Override
     public UserDetailsService userDetailService() {
@@ -53,7 +60,6 @@ public class UserServiceImpl implements UserService {
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("Invalid Role!");
         }
-
         User user = modelMapper.map(userSaveRequestDto, User.class);
 
         String passwordHash = passwordEncoder.encode(userSaveRequestDto.getPassword());
@@ -66,7 +72,15 @@ public class UserServiceImpl implements UserService {
 
         UserResponseDto userResponseDto = modelMapper.map(savedUser, UserResponseDto.class);
 
+        // Send Email
+        HashMap<String, Object> templateData = new HashMap<>();
+        templateData.put("name", userResponseDto.getFirstName());
+
+        emailService.sendHtmlTemplateEmail(userResponseDto.getEmail(), "Welcome to Red Bakery", "RegisterEmailTemplate.ftl", templateData);
+
+
         return userResponseDto;
+
     }
 
     @Override
@@ -94,10 +108,10 @@ public class UserServiceImpl implements UserService {
             user.setPhoneNumber(userUpdateRequestDto.getPhoneNumber());
             user.setProfileImage(userUpdateRequestDto.getProfileImage());
 
-            try{
+            try {
                 Role role = Role.valueOf(userUpdateRequestDto.getRole().toUpperCase());
                 user.setRole(role);
-            }catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 throw new BadRequestException("Invalid Role!");
             }
 
@@ -115,12 +129,23 @@ public class UserServiceImpl implements UserService {
     public void deleteUserProfile(Long userId) {
         User user = userRepository.getReferenceById(userId);
 
-        if(user != null && user.getStatus() != WellKnownStatus.DELETED.getValue()){
+        if (user != null && user.getStatus() != WellKnownStatus.DELETED.getValue()) {
             user.setStatus(WellKnownStatus.DELETED.getValue());
 
             userRepository.save(user);
-        }else {
+        } else {
             throw new NotFoundException("User not found!");
         }
+    }
+
+    @Override
+    public List<UserResponseDto> getAllUsers() {
+        List<UserResponseDto> users = null;
+
+        List<User> userList = userRepository.findAllByStatus(WellKnownStatus.ACTIVE.getValue());
+        users = modelMapper.map(userList, new TypeToken<List<UserResponseDto>>() {
+        }.getType());
+
+        return users;
     }
 }

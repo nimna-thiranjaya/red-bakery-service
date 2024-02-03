@@ -6,6 +6,8 @@ import com.redbakery.redbakeryservice.dto.request.UserUpdateRequestDto;
 import com.redbakery.redbakeryservice.dto.response.UserResponseDto;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import java.util.List;
+
 public interface UserService {
     UserDetailsService userDetailService();
 
@@ -16,4 +18,6 @@ public interface UserService {
     UserResponseDto updateUserProfile(Long userId, UserUpdateRequestDto userUpdateRequestDto);
 
     void deleteUserProfile(Long userId);
+
+    List<UserResponseDto> getAllUsers();
 }

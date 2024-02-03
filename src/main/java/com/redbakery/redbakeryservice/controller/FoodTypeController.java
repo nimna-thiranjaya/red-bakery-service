@@ -4,7 +4,6 @@ import com.redbakery.redbakeryservice.common.ApplicationRoute;
 import com.redbakery.redbakeryservice.common.CommonResponse;
 import com.redbakery.redbakeryservice.dto.AuthenticationTicketDto;
 import com.redbakery.redbakeryservice.dto.request.FoodTypeRequestDto;
-import com.redbakery.redbakeryservice.dto.response.FoodCategoryResponseDto;
 import com.redbakery.redbakeryservice.dto.response.FoodTypeResponseDto;
 import com.redbakery.redbakeryservice.service.AuthenticationService;
 import com.redbakery.redbakeryservice.service.FoodTypeService;

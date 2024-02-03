@@ -9,6 +9,7 @@ public class ApplicationRoute {
         public static final String GetProfile = "/profile";
         public static final String UpdateProfile = "/profile";
         public static final String DeleteProfile = "/profile";
+        public static final String GetAll = "/";
     }
 
     public class Authentication {
@@ -36,6 +37,25 @@ public class ApplicationRoute {
         public static final String ActiveInactive = "/{id}/active-inactive";
         public static final String Delete = "/{id}";
         public  static  final String GetByCategory = "/food-category/{id}";
+    }
+
+    public class Product {
+        public static final String Root = ApplicationRoute.Root + "/product";
+        public static final String GetAll = "/";
+        public static final String GetById = "/{id}";
+        public static final String Save = "/";
+        public static final String Update = "/{id}";
+        public static final String ActiveInactive = "/{id}/active-inactive";
+        public static final String Delete = "/{id}";
+        public static final String GetByFoodType = "/food-type/{id}";
+        public static final String SearchProduct = "/search";
+    }
+
+    public class Cart {
+        public  static  final  String Root = ApplicationRoute.Root + "/cart";
+        public  static  final  String AddToCart = "/add-to-cart";
+        public static  final  String GetCart = "/get-cart";
+        public static  final  String UpdateCart = "/update-cart";
     }
 }
 

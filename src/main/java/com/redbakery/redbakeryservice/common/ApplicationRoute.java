@@ -56,6 +56,7 @@ public class ApplicationRoute {
         public static final String AddToCart = "/add-to-cart";
         public static final String GetCart = "/get-cart";
         public static final String UpdateCart = "/update-cart";
+        public static final String RemoveFromCart = "/remove-item/cart-detail/{id}";
     }
 
     public class WishList {

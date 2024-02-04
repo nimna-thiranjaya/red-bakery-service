@@ -99,4 +99,24 @@ public class CartServiceImpl implements CartService {
             cartRepository.save(cart);
         }
     }
+
+    @Override
+    @Transactional
+    public void removeFromCart(AuthenticationTicketDto authTicket, Long cartDetailId) {
+        Cart cart = cartRepository.findByUserAndStatusIn(authTicket.getUser(), List.of(WellKnownCartStatus.PENDING.getValue()));
+
+        if (cart == null)
+            throw new BadRequestException("Cart not found!");
+
+        CartDetail cartDetail = cartDetailRepository.findByCartDetailsIdAndStatusIn(cartDetailId, List.of(WellKnownStatus.ACTIVE.getValue()));
+
+        if (cartDetail == null)
+            throw new BadRequestException("Cart detail not found!");
+
+        cartDetail.setStatus(WellKnownStatus.DELETED.getValue());
+        cartDetailRepository.save(cartDetail);
+
+        cart.setTotalQuantity(cart.getTotalQuantity() - cartDetail.getQuantity());
+        cartRepository.save(cart);
+    }
 }

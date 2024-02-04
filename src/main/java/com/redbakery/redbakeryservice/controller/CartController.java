@@ -52,4 +52,17 @@ public class CartController {
     }
 
 
+    @DeleteMapping(ApplicationRoute.Cart.RemoveFromCart)
+    @PreAuthorize("hasAuthority('USER')")
+    ResponseEntity<CommonResponse> RemoveFromCart(@PathVariable Long id) {
+        AuthenticationTicketDto authTicket = authenticationService.AuthenticationTicket();
+
+        cartService.removeFromCart(authTicket, id);
+
+        return new ResponseEntity<CommonResponse>(
+                new CommonResponse(true, "Product Removed From Cart!", null),
+                HttpStatus.OK
+        );
+
+    }
 }

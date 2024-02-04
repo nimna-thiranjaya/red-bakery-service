@@ -9,4 +9,6 @@ public interface CartService {
     void addToCart(AuthenticationTicketDto authTicket, CartRequestDto cartRequestDto);
 
     void updateCart(AuthenticationTicketDto authTicket, List<CartRequestDto> request);
+
+    void removeFromCart(AuthenticationTicketDto authTicket, Long cartDetailId);
 }

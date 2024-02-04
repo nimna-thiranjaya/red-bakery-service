@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -28,13 +29,14 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
 
     private final CartDetailRepository cartDetailRepository;
+
     @Override
     @Transactional
     public void addToCart(AuthenticationTicketDto authTicket, CartRequestDto cartRequestDto) {
         Cart cart = cartRepository.findByUserAndStatusIn(authTicket.getUser(), List.of(WellKnownCartStatus.PENDING.getValue()));
 
         // If cart is not found, create a new cart
-        if (cart == null){
+        if (cart == null) {
             cart = new Cart();
             cart.setUser(authTicket.getUser());
             cart.setStatus(WellKnownCartStatus.PENDING.getValue());
@@ -44,12 +46,12 @@ public class CartServiceImpl implements CartService {
 
         Product product = productRepository.findByProductIdAndStatusIn(cartRequestDto.getProductId(), List.of(WellKnownStatus.ACTIVE.getValue()));
 
-        if(product == null)
+        if (product == null)
             throw new RuntimeException("Product not found!");
 
         List<CartDetail> cartDetails = cartDetailRepository.findAllByCartAndProductAndStatusIn(cart, product, List.of(WellKnownStatus.ACTIVE.getValue()));
 
-        if(!cartDetails.isEmpty())
+        if (!cartDetails.isEmpty())
             throw new BadRequestException("Product already in cart!");
 
         CartDetail cartDetail = new CartDetail();
@@ -62,5 +64,39 @@ public class CartServiceImpl implements CartService {
 
         cart.setTotalQuantity(cart.getTotalQuantity() + cartRequestDto.getQuantity());
         cartRepository.save(cart);
+    }
+
+    @Override
+    @Transactional
+    public void updateCart(AuthenticationTicketDto authTicket, List<CartRequestDto> request) {
+        Cart cart = cartRepository.findByUserAndStatusIn(authTicket.getUser(), List.of(WellKnownCartStatus.PENDING.getValue()));
+
+        if (cart == null)
+            throw new BadRequestException("Cart not found!");
+
+        for (CartRequestDto cartRequestDto : request) {
+            Product product = productRepository.findByProductIdAndStatusIn(cartRequestDto.getProductId(), List.of(WellKnownStatus.ACTIVE.getValue()));
+
+            if (product == null)
+                throw new BadRequestException("Product not found!");
+
+            List<CartDetail> cartDetails = cartDetailRepository.findAllByCartAndProductAndStatusIn(cart, product, List.of(WellKnownStatus.ACTIVE.getValue()));
+
+            if (!cartDetails.isEmpty()){
+                cartDetails.forEach(cartDetail -> {
+                  if(Objects.equals(cartDetail.getProduct().getProductId(), cartRequestDto.getProductId()))
+                      cartDetail.setQuantity(cartRequestDto.getQuantity());
+
+                    cartDetailRepository.save(cartDetail);
+                });
+            }
+        }
+
+        List<CartDetail> cartDetails = cartDetailRepository.findAllByCartAndStatusIn(cart, List.of(WellKnownStatus.ACTIVE.getValue()));
+
+        if(!cartDetails.isEmpty()){
+            cart.setTotalQuantity(cartDetails.stream().mapToInt(CartDetail::getQuantity).sum());
+            cartRepository.save(cart);
+        }
     }
 }

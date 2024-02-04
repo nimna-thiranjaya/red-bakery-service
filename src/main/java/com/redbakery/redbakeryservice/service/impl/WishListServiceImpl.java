@@ -11,6 +11,7 @@ import com.redbakery.redbakeryservice.repository.UserRepository;
 import com.redbakery.redbakeryservice.repository.WishListRepository;
 import com.redbakery.redbakeryservice.service.WishListService;
 import com.redbakery.redbakeryservice.util.CustomMapping;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -50,18 +51,18 @@ public class WishListServiceImpl implements WishListService {
     }
 
     @Override
+    @Transactional
     public List<WishListResponseDto> getWishList(AuthenticationTicketDto authTicket) {
         List<WishListResponseDto> response = new ArrayList<>();
         List<WishList> wishList = wishListRepository.findAllByUserAndStatusIn(authTicket.getUser(), List.of(WellKnownStatus.ACTIVE.getValue()));
 
         if(!wishList.isEmpty()){
             wishList.forEach(wishListItem -> {
-                if (wishListItem.getProduct().getStatus() == WellKnownStatus.ACTIVE.getValue()){
+                if(wishListItem.getProduct().getStatus() == WellKnownStatus.ACTIVE.getValue()){
                     WishListResponseDto wishListResponseDto = mapProductToWishListResponseDto(wishListItem);
                     response.add(wishListResponseDto);
-                }else{
-                    wishListItem.setStatus(WellKnownStatus.DELETED.getValue());
-                    wishListRepository.save(wishListItem);
+                }else {
+                    wishListRepository.delete(wishListItem);
                 }
             });
         }
@@ -76,9 +77,7 @@ public class WishListServiceImpl implements WishListService {
         if (wishList == null)
             throw new BadRequestException("Invalid Wishlist Id!");
 
-        wishList.setStatus(WellKnownStatus.DELETED.getValue());
-
-        wishListRepository.save(wishList);
+        wishListRepository.delete(wishList);
     }
 
     private static WishListResponseDto mapProductToWishListResponseDto(WishList wishList){

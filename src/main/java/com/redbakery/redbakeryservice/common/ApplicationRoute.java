@@ -62,7 +62,7 @@ public class ApplicationRoute {
         public static final String Root = ApplicationRoute.Root + "/wishlist";
         public static final String AddToWishList = "/product/{id}";
         public static final String GetWishList = "/";
-        public static final String RemoveFromWishList = "/remove";
+        public static final String RemoveFromWishList = "/{id}";
 
 
     }

@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface WishListRepository extends JpaRepository<WishList, Long> {
     List<WishList> findAllByUserAndStatusIn(User user, List<Integer> status);
+
+    WishList findByWishListIdAndStatusIn(Long wishListId, List<Integer> status);
 }

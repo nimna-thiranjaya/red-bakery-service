@@ -105,6 +105,8 @@ public class ProductServiceImpl implements ProductService {
             product = productRepository.findByProductIdAndStatusIn(id, List.of(WellKnownStatus.ACTIVE.getValue()));
         }
 
+        if(product == null) throw new BadRequestException("Product Not Found!");
+
         return mapProductToProductResponseDto(product, userRole);
     }
 

@@ -12,6 +12,7 @@ import java.util.Date;
 @Table(name = "wishlist")
 public class WishList {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long wishListId;
 
     @Column(name = "status", nullable = false)

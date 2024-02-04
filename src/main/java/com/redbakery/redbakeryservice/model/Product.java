@@ -58,4 +58,7 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     private Set<WishList> wishLists;
+
+    @OneToMany(mappedBy = "product")
+    private Set<CartDetail> cartDetails;
 }

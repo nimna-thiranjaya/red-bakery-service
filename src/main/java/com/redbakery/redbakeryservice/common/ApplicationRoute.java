@@ -13,7 +13,7 @@ public class ApplicationRoute {
     }
 
     public class Authentication {
-        public static final  String Root = ApplicationRoute.Root + "/auth";
+        public static final String Root = ApplicationRoute.Root + "/auth";
         public static final String Login = "/login";
         public static final String RefreshToken = "/refresh-token";
     }
@@ -36,7 +36,7 @@ public class ApplicationRoute {
         public static final String Update = "/{id}";
         public static final String ActiveInactive = "/{id}/active-inactive";
         public static final String Delete = "/{id}";
-        public  static  final String GetByCategory = "/food-category/{id}";
+        public static final String GetByCategory = "/food-category/{id}";
     }
 
     public class Product {
@@ -52,10 +52,20 @@ public class ApplicationRoute {
     }
 
     public class Cart {
-        public  static  final  String Root = ApplicationRoute.Root + "/cart";
-        public  static  final  String AddToCart = "/add-to-cart";
-        public static  final  String GetCart = "/get-cart";
-        public static  final  String UpdateCart = "/update-cart";
+        public static final String Root = ApplicationRoute.Root + "/cart";
+        public static final String AddToCart = "/add-to-cart";
+        public static final String GetCart = "/get-cart";
+        public static final String UpdateCart = "/update-cart";
+        public static final String RemoveFromCart = "/remove-item/cart-detail/{id}";
+    }
+
+    public class WishList {
+        public static final String Root = ApplicationRoute.Root + "/wishlist";
+        public static final String AddToWishList = "/product/{id}";
+        public static final String GetWishList = "/";
+        public static final String RemoveFromWishList = "/{id}";
+
+
     }
 }
 

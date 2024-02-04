@@ -3,10 +3,9 @@ package com.redbakery.redbakeryservice.controller;
 import com.redbakery.redbakeryservice.common.ApplicationRoute;
 import com.redbakery.redbakeryservice.common.CommonResponse;
 import com.redbakery.redbakeryservice.dto.AuthenticationTicketDto;
-import com.redbakery.redbakeryservice.dto.request.CartRequestDto;
+import com.redbakery.redbakeryservice.dto.response.WishListResponseDto;
 import com.redbakery.redbakeryservice.service.AuthenticationService;
-import com.redbakery.redbakeryservice.service.CartService;
-import jakarta.validation.Valid;
+import com.redbakery.redbakeryservice.service.WishListService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,53 +15,50 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping(ApplicationRoute.WishList.Root)
 @RequiredArgsConstructor
-@RequestMapping(ApplicationRoute.Cart.Root)
-public class CartController {
-    private final CartService cartService;
+public class WishListController {
 
     private final AuthenticationService authenticationService;
 
-    @PostMapping(ApplicationRoute.Cart.AddToCart)
+    private final WishListService wishListService;
+
+    @PostMapping(ApplicationRoute.WishList.AddToWishList)
     @PreAuthorize("hasAuthority('USER')")
-    ResponseEntity<CommonResponse> AddToCart(@RequestBody @Valid CartRequestDto cartRequestDto) {
+    public ResponseEntity<CommonResponse> AddProductToWishList(@PathVariable Long id){
         AuthenticationTicketDto authTicket = authenticationService.AuthenticationTicket();
 
-        cartService.addToCart(authTicket, cartRequestDto);
+        wishListService.addProductToWishList(authTicket, id);
 
         return new ResponseEntity<CommonResponse>(
-                new CommonResponse(true, "Product Added To Cart!", null),
+                new CommonResponse(true, "Product Added To Wishlist!", null),
                 HttpStatus.CREATED
         );
-
     }
 
-    @PutMapping(ApplicationRoute.Cart.UpdateCart)
+    @GetMapping(ApplicationRoute.WishList.GetWishList)
     @PreAuthorize("hasAuthority('USER')")
-    ResponseEntity<CommonResponse> UpdateCart(@RequestBody @Valid List<CartRequestDto> request) {
+    public ResponseEntity<CommonResponse> GetWishList(){
         AuthenticationTicketDto authTicket = authenticationService.AuthenticationTicket();
 
-        cartService.updateCart(authTicket, request);
+        List<WishListResponseDto> wishList = wishListService.getWishList(authTicket);
 
         return new ResponseEntity<CommonResponse>(
-                new CommonResponse(true, "Cart Updated!", null),
+                new CommonResponse(true, "", wishList ),
                 HttpStatus.OK
         );
-
     }
 
-
-    @DeleteMapping(ApplicationRoute.Cart.RemoveFromCart)
+    @DeleteMapping(ApplicationRoute.WishList.RemoveFromWishList)
     @PreAuthorize("hasAuthority('USER')")
-    ResponseEntity<CommonResponse> RemoveFromCart(@PathVariable Long id) {
+    public ResponseEntity<CommonResponse> RemoveFromWishList(@PathVariable Long id){
         AuthenticationTicketDto authTicket = authenticationService.AuthenticationTicket();
 
-        cartService.removeFromCart(authTicket, id);
+        wishListService.removeFromWishList(authTicket, id);
 
         return new ResponseEntity<CommonResponse>(
-                new CommonResponse(true, "Product Removed From Cart!", null),
+                new CommonResponse(true, "Product Removed From Wishlist!", null),
                 HttpStatus.OK
         );
-
     }
 }

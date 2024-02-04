@@ -55,4 +55,10 @@ public class Product {
     @OneToOne
     @JoinColumn(name = "discount_id", nullable = true)
     private Discount discount;
+
+    @OneToMany(mappedBy = "product")
+    private Set<WishList> wishLists;
+
+    @OneToMany(mappedBy = "product")
+    private Set<CartDetail> cartDetails;
 }

@@ -1,25 +1,22 @@
 package com.redbakery.redbakeryservice.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 
 @Entity
-@Table(name = "payment")
-public class Payment {
+@Data
+@Table(name = "wishlist")
+public class WishList {
     @Id
-    private int paymentId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long wishListId;
 
-    @Column(name = "payment_type")
-    private int paymentType;
-
-    @Column(name = "payment_status")
-    private String paymentStatus;
-
-    @Column(name = "payment_date")
-    private String paymentDate;
+    @Column(name = "status", nullable = false)
+    private Integer status;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
@@ -30,5 +27,10 @@ public class Payment {
     private Date updatedAt;
 
     @OneToOne
-    private Order order;
+    @JoinColumn(nullable = false, name = "user_id")
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(nullable = false, name = "product_id")
+    private Product product;
 }

@@ -1,37 +1,37 @@
 package com.redbakery.redbakeryservice.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 
 @Entity
-@Table(name = "shopping_cart_product")
-public class ShoppingCartProduct {
-
+@Data
+@Table(name = "cart_detail")
+public class CartDetail {
     @Id
-    private int cartProductId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long cartDetailsId;
 
-    private int quantity;
+    private Integer quantity;
 
-    private int status;
+    private Integer status;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     private Date createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     private Date updatedAt;
-
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private ShoppingCart shoppingCart;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
-
+    @ManyToOne
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 }

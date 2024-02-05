@@ -4,6 +4,7 @@ import com.redbakery.redbakeryservice.common.ApplicationRoute;
 import com.redbakery.redbakeryservice.common.CommonResponse;
 import com.redbakery.redbakeryservice.dto.AuthenticationTicketDto;
 import com.redbakery.redbakeryservice.dto.request.CartRequestDto;
+import com.redbakery.redbakeryservice.dto.response.GetCartResponseDto;
 import com.redbakery.redbakeryservice.service.AuthenticationService;
 import com.redbakery.redbakeryservice.service.CartService;
 import jakarta.validation.Valid;
@@ -51,7 +52,6 @@ public class CartController {
 
     }
 
-
     @DeleteMapping(ApplicationRoute.Cart.RemoveFromCart)
     @PreAuthorize("hasAuthority('USER')")
     ResponseEntity<CommonResponse> RemoveFromCart(@PathVariable Long id) {
@@ -61,6 +61,20 @@ public class CartController {
 
         return new ResponseEntity<CommonResponse>(
                 new CommonResponse(true, "Product Removed From Cart!", null),
+                HttpStatus.OK
+        );
+
+    }
+
+    @GetMapping(ApplicationRoute.Cart.GetCart)
+    @PreAuthorize("hasAuthority('USER')")
+    ResponseEntity<CommonResponse> GetCart() {
+        AuthenticationTicketDto authTicket = authenticationService.AuthenticationTicket();
+
+        GetCartResponseDto cartDetails = cartService.getCart(authTicket);
+
+        return new ResponseEntity<CommonResponse>(
+                new CommonResponse(true, "", cartDetails),
                 HttpStatus.OK
         );
 
